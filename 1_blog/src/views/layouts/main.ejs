@@ -1,0 +1,35 @@
+<!-- src/views/layouts/main.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'My Blog' %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <script src="https://cdn.tailwindcss.net"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans h-screen">
+    <header class="bg-blue-600 text-white p-6">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold">Personal Blog</h1>
+        <p class="mt-2">Thoughts and more</p>
+      </div>
+    </header>
+
+    <!-- Variable especial de EJS para saber en donde remplazar los bloques hijos. -->
+    <main class="max-w-4xl mx-auto p-6 h-full"><%- body %></main>
+
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+      <p>© <%= new Date().getFullYear() %> Personal Blog</p>
+    </footer>
+  </body>
+</html>
