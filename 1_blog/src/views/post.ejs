@@ -1,0 +1,18 @@
+<div class="bg-white p-8 rounded-lg shadow-lg">
+  <h1 class="text-4xl font-bold text-gray-800 mb-4"><%= post.title %></h1>
+
+  <time class="text-gray-500 block mb-8">
+    <%= new Date(post.date).toLocaleDateString('en-US', { year: 'numeric',
+    month: 'long', day: 'numeric' }) %>
+  </time>
+
+  <div
+    class="prose max-w-none prose-lg prose-headings:text-blue-700 prose-a:text-blue-600"
+  >
+    <%- post.contentHTML %>
+  </div>
+
+  <a href="/" class="mt-10 inline-block text-blue-600 hover:underline">
+    ← Go to home
+  </a>
+</div>
