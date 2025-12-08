@@ -2,8 +2,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import expressEjsLayouts from 'express-ejs-layouts';
+import session from 'express-session';
+import flash from 'connect-flash';
 
 import indexRoutes from './routes/index.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 // Environment variables
 dotenv.config();
@@ -16,6 +20,30 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Session
+app.use(
+  session({
+    secret: process.env.SECRET_KEY || 'mi-secret-blog-super-strong-123',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // true only in prod with HTTPS
+      maxAge: 1000 * 60 * 60 * 24, // 24hs
+    },
+  })
+);
+
+app.use(flash());
+
+// Pass the variables to all the views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  res.locals.error = req.flash('error')[0] || null;
+  res.locals.success = req.flash('sucess')[0] || null;
+  next();
+});
+
 // View configurations
 app.use(expressEjsLayouts);
 app.set('layout', 'layouts/main');
@@ -25,6 +53,8 @@ app.use(express.static('src/public'));
 
 // Routes
 app.use('/', indexRoutes); // Home and public posts
+app.use('/', authRoutes); // /login, /logout
+app.use('/admin', adminRoutes); // admin/* (All routes protected)
 
 app.use((req, res) => {
   res.status(404).render('404', { title: 'Page not found' });
