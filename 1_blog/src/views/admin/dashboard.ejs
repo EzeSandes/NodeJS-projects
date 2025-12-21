@@ -6,7 +6,7 @@
     <div class="flex gap-4 items-center">
       <span class="text-gray-600">Hello, <%= user.username %>!</span>
       <a
-        href="/admin/nuevo"
+        href="/admin/new"
         class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition"
       >
         + New post
@@ -25,7 +25,7 @@
   <div class="text-center py-12 bg-white rounded-lg shadow">
     <p class="text-gray-600 text-lg">
       No posts yet.
-      <a href="/admin/nuevo" class="text-blue-600 underline font-medium"
+      <a href="/admin/new" class="text-blue-600 underline font-medium"
         >Create the first</a
       >
     </p>
@@ -85,13 +85,13 @@
             class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
           >
             <a
-              href="/admin/editar/<%= post.id %>"
+              href="/admin/edit/<%= post.id %>"
               class="text-indigo-600 hover:text-indigo-900 mr-4"
               >Edit</a
             >
 
             <form
-              action="/admin/borrar/<%= post.id %>"
+              action="/admin/delete/<%= post.id %>"
               method="POST"
               class="inline"
             >
