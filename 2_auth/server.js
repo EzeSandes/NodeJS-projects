@@ -24,6 +24,39 @@ let users = [
   },
 ];
 
+//////////////////////////////// Middlewares
+
+function authenticateJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer '))
+    return res
+      .status(401)
+      .json({ message: 'Access denied: No token provided' });
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    req.user = decoded; // We add the user to the request.
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid token or expired' });
+  }
+}
+
+// Roles
+function authorizeRoles(roles) {
+  return function (req, res, next) {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'Access denied: Rol' });
+    }
+
+    next();
+  };
+}
+
 //////////////////////////////// Routes
 
 app.post('/login', (req, res) => {
@@ -44,6 +77,25 @@ app.post('/login', (req, res) => {
 
   res.json({ token });
 });
+
+// protected route(anyone authenticated)
+app.get('/protected', authenticateJWT, (req, res) => {
+  res.json({ message: `Welcome ${req.user.email}! You are ${req.user.role}.` });
+});
+
+// protected routes by Role
+app.get('/admin', authenticateJWT, authorizeRoles(['admin']), (req, res) => {
+  res.json({ message: 'Welcome to the admin panel!' });
+});
+
+app.get(
+  '/user',
+  authenticateJWT,
+  authorizeRoles(['user', 'admin']),
+  (req, res) => {
+    res.json({ message: 'Welcome to the user area! Role: ' + req.user.role });
+  }
+);
 
 //////////////////////////////// SERVER
 app.listen(3000, () => {
