@@ -2,9 +2,12 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 
 const app = express();
+app.use(express.json());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const SECRET_KEY = 'MY_very_SECURE_key';
 
@@ -27,14 +30,12 @@ let users = [
 //////////////////////////////// Middlewares
 
 function authenticateJWT(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies.token;
 
-  if (!authHeader || !authHeader.startsWith('Bearer '))
+  if (!token)
     return res
       .status(401)
-      .json({ message: 'Access denied: No token provided' });
-
-  const token = authHeader.split(' ')[1];
+      .json({ message: 'Access denied: You are not logged in' });
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
@@ -42,6 +43,7 @@ function authenticateJWT(req, res, next) {
     req.user = decoded; // We add the user to the request.
     next();
   } catch (error) {
+    res.clearCookie('token');
     return res.status(403).json({ message: 'Invalid token or expired' });
   }
 }
@@ -64,10 +66,8 @@ app.post('/login', (req, res) => {
 
   const user = users.find(user => user.email === email);
 
-  if (!user) return res.status(401).json({ message: 'User not found' });
-
-  if (!bcrypt.compareSync(password, user.password))
-    return res.status(401).json({ message: 'incorrect password' });
+  if (!user || !bcrypt.compareSync(password, user.password))
+    return res.status(401).json({ message: 'Incorrect credentials' });
 
   const token = jwt.sign(
     { id: user.id, email: user.email, role: user.role },
@@ -75,7 +75,31 @@ app.post('/login', (req, res) => {
     { expiresIn: '1h' }
   );
 
-  res.json({ token });
+  // Save the token in a cookie
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Only HTTPS in production
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 1000, // 1hs(in ms)
+  });
+
+  res.json({ message: 'Login successfull', token });
+});
+
+// Logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+
+  res.json({ message: 'Logout successful' });
+});
+
+// Route to verify if the user is loggedin
+app.get('/me', authenticateJWT, (req, res) => {
+  res.json(req.user);
 });
 
 // protected route(anyone authenticated)
