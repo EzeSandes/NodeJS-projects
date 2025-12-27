@@ -116,3 +116,31 @@ export async function updatebook(req, res) {
     });
   }
 }
+
+/*
+|--------------------------------------------------------------------------
+| Delete book by ID
+|--------------------------------------------------------------------------
+*/
+
+export async function deleteBook(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deletedBook = await BookModel.deleteById(id);
+
+    if (!deletedBook)
+      return res.status(404).json({
+        message: 'Book not found',
+      });
+
+    res.status(200).json({
+      message: 'Book deleted succesfully',
+      data: deletedBook,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'failed to delete book',
+    });
+  }
+}

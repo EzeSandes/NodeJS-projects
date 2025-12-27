@@ -57,6 +57,19 @@ class BookModel {
 
     return updateBook;
   }
+
+  // Delete book by Id
+  static async deleteById(id) {
+    const data = await readJSON();
+
+    const index = data.books.findIndex(book => book.id === id);
+
+    if (index === -1) return null;
+
+    const deletedBook = data.books.splice(index, 1);
+    await writeJSON(data);
+    return deletedBook;
+  }
 }
 
 export default BookModel;
