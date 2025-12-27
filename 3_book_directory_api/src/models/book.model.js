@@ -30,6 +30,33 @@ class BookModel {
 
     return newBook;
   }
+
+  // Get a Book by Id
+  static async findById(id) {
+    const data = await readJSON();
+
+    return data.books.find(book => book.id === id) || null;
+  }
+
+  // Update book by Id
+  static async updateById(id, updates) {
+    const data = await readJSON();
+
+    const index = data.books.findIndex(book => book.id === id);
+
+    if (index === -1) return null;
+
+    const updateBook = {
+      ...data.books[index],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    data.books[index] = updateBook;
+    await writeJSON(data);
+
+    return updateBook;
+  }
 }
 
 export default BookModel;
