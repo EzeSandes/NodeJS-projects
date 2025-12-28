@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 
+import errorHandler from './middlewares/errorHandler.js';
+
 import bookRoutes from './routes/book.routes.js';
+import AppError from './errors/AppError.js';
 
 const app = express();
 
@@ -32,14 +35,22 @@ app.use('/api/v1/books', bookRoutes);
 
 /*
 |--------------------------------------------------------------------------
-| Not found handler
+| Handle undefined routes
 |--------------------------------------------------------------------------
 */
 
-app.use((err, req, res, next) => {
-  res.status(404).json({
-    error: 'Internal server Error',
-  });
+app.use((req, res, next) => {
+  next(new AppError(`Cant find ${req.originalUrl} on this server.`, 404));
 });
+
+/*
+|--------------------------------------------------------------------------
+| Global error handler
+| Always at last
+
+|--------------------------------------------------------------------------
+*/
+
+app.use(errorHandler);
 
 export default app;

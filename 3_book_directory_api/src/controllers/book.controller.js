@@ -1,4 +1,6 @@
 import BookModel from '../models/book.model.js';
+import AppError from '../errors/AppError.js';
+import asyncHandler from '../utils/asyncHandler.js';
 import { removeFile } from '../utils/fileRemover.js';
 
 /*
@@ -6,23 +8,16 @@ import { removeFile } from '../utils/fileRemover.js';
 | Get all books
 |--------------------------------------------------------------------------
 */
-export async function getAllBooks(req, res) {
-  try {
-    const books = await BookModel.findAll();
+export const getAllBooks = asyncHandler(async (req, res) => {
+  const books = await BookModel.findAll();
 
-    res.status(200).json({
-      total: books.length,
-      data: books,
-    });
-  } catch (error) {
-    console.log(error);
+  if (!books) throw new AppError('Failed to fetch books', 500);
 
-    res.status(500).json({
-      message: 'Failed to fetch books',
-      error,
-    });
-  }
-}
+  res.status(200).json({
+    total: books.length,
+    data: books,
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -30,26 +25,17 @@ export async function getAllBooks(req, res) {
 |--------------------------------------------------------------------------
 */
 
-export async function getABookById(req, res) {
-  try {
-    const { id } = req.params;
+export const getABookById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    const book = await BookModel.findById(id);
+  const book = await BookModel.findById(id);
 
-    if (!book)
-      return res.status(404).json({
-        message: 'Book not found',
-      });
+  if (!book) throw new AppError('Failed to fetch books', 404);
 
-    res.status(200).json({
-      data: book,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Failed to fetch book',
-    });
-  }
-}
+  res.status(200).json({
+    data: book,
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -57,34 +43,28 @@ export async function getABookById(req, res) {
 |--------------------------------------------------------------------------
 */
 
-export async function createBook(req, res) {
-  try {
-    const { title, author } = req.body;
+export const createBook = asyncHandler(async (req, res) => {
+  const { title, author } = req.body;
 
-    // Basic validation
-    if (!title || !author)
-      return res.status(400).json({
-        message: 'Title and author are required',
-      });
+  // Basic validation
+  if (!title || !author)
+    throw new AppError('Title and author are required', 400);
 
-    const coverImage = req.file ? `/images/books/${req.file.filename}` : null;
+  const coverImage = req.file ? `/images/books/${req.file.filename}` : null;
 
-    const newBook = await BookModel.create({
-      title,
-      author,
-      coverImage: coverImage,
-    });
+  const newBook = await BookModel.create({
+    title,
+    author,
+    coverImage: coverImage,
+  });
 
-    res.status(201).json({
-      message: 'Book created successfully',
-      data: newBook,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Failed to create book',
-    });
-  }
-}
+  if (!newBook) throw new AppError('Failed to create book', 500);
+
+  res.status(201).json({
+    message: 'Book created successfully',
+    data: newBook,
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -92,41 +72,34 @@ export async function createBook(req, res) {
 |--------------------------------------------------------------------------
 */
 
-export async function updatebook(req, res) {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+export const updatebook = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
 
-    // Prevent ID override
-    if (updates.id) delete updates.id;
+  // Prevent ID override
+  if (updates.id) delete updates.id;
 
-    // Fetch existing book
-    const existingBook = await BookModel.findById(id);
+  // Fetch existing book
+  const existingBook = await BookModel.findById(id);
 
-    if (!existingBook)
-      return res.status(404).json({
-        message: 'Book not found',
-      });
+  if (!existingBook) throw new AppError('Book not found', 404);
 
-    // Handle cover image replacement
-    if (req.file) {
-      if (existingBook.coverImage) await removeFile(existingBook.coverImage);
+  // Handle cover image replacement
+  if (req.file) {
+    if (existingBook.coverImage) await removeFile(existingBook.coverImage);
 
-      updates.coverImage = `/images/books/${req.file.filename}`;
-    }
-
-    const updatedBook = await BookModel.updateById(id, updates);
-
-    res.status(200).json({
-      message: 'Book updated successfully',
-      data: updatedBook,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Failed to update book',
-    });
+    updates.coverImage = `/images/books/${req.file.filename}`;
   }
-}
+
+  const updatedBook = await BookModel.updateById(id, updates);
+
+  if (!updatedBook) throw new AppError('Failed to update book', 500);
+
+  res.status(200).json({
+    message: 'Book updated successfully',
+    data: updatedBook,
+  });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -134,24 +107,15 @@ export async function updatebook(req, res) {
 |--------------------------------------------------------------------------
 */
 
-export async function deleteBook(req, res) {
-  try {
-    const { id } = req.params;
+export const deleteBook = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    const deletedBook = await BookModel.deleteById(id);
+  const deletedBook = await BookModel.deleteById(id);
 
-    if (!deletedBook)
-      return res.status(404).json({
-        message: 'Book not found',
-      });
+  if (!deletedBook) throw new AppError('Book not found', 404);
 
-    res.status(200).json({
-      message: 'Book deleted succesfully',
-      data: deletedBook,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'failed to delete book',
-    });
-  }
-}
+  res.status(200).json({
+    message: 'Book deleted succesfully',
+    data: deletedBook,
+  });
+});
