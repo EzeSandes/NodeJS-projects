@@ -13,10 +13,55 @@
       "id": "7dee2f82-23f3-4c19-b0ec-aeb613bc22ef",
       "title": "Test 1",
       "author": "Author 1",
-      "coverImage": "/images/test-1.png",
+      "coverImage": "/images/books/f077f7bb-cde1-45aa-a396-f60e81de09f5.webp",
       "available": true,
       "createdAt": "2025-12-27T15:03:17.991Z",
-      "updatedAt": "2025-12-27T15:03:17.991Z"
+      "updatedAt": "2025-12-28T15:42:39.859Z"
+    },
+    {
+      "id": "285ea1e6-6e75-4136-8fcf-6d940da5a5ad",
+      "title": "Test 2",
+      "author": "Author 1",
+      "coverImage": "/images/test-1.png",
+      "available": true,
+      "createdAt": "2025-12-27T15:55:18.535Z",
+      "updatedAt": "2025-12-27T15:55:18.535Z"
+    },
+    {
+      "id": "eeeec04c-109f-473e-92bd-abca6ef683f4",
+      "title": "Test 4",
+      "author": "Author 4",
+      "coverImage": "/images/books/24d18c7e-62be-4e07-b658-9368d11e266b.webp",
+      "available": true,
+      "createdAt": "2025-12-27T16:00:11.145Z",
+      "updatedAt": "2025-12-28T15:59:25.315Z"
+    },
+    {
+      "id": "4c0a6bc1-0a54-4a83-9dd1-f6cb77552537",
+      "title": "Test 5",
+      "author": "Author 5",
+      "coverImage": null,
+      "available": true,
+      "createdAt": "2025-12-28T15:30:52.936Z",
+      "updatedAt": "2025-12-28T15:30:52.937Z"
+    },
+    {
+      "id": "55815b9b-75c2-4798-ad07-1593d7373091",
+      "title": "Test 6",
+      "author": "Author 6",
+      "coverImage": "/images/books/0e2c43f5-0bae-40d6-a1ef-96556d8b6f5a.webp",
+      "available": true,
+      "createdAt": "2025-12-28T15:31:46.298Z",
+      "updatedAt": "2025-12-28T15:41:57.608Z"
+    },
+    {
+      "id": "32df3290-3ad4-492c-b1d0-d88f1d788689",
+      "title": "Test 6",
+      "author": "Author 6",
+      "coverImage": "/images/books/f79eae2b-ae66-4f20-a5f0-b0518d964ddf.webp",
+      "available": true,
+      "createdAt": "2025-12-28T15:40:14.475Z",
+      "updatedAt": "2025-12-28T15:40:14.475Z"
     }
   ]
 }

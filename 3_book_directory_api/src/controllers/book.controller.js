@@ -1,4 +1,5 @@
 import BookModel from '../models/book.model.js';
+import { removeFile } from '../utils/fileRemover.js';
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +59,7 @@ export async function getABookById(req, res) {
 
 export async function createBook(req, res) {
   try {
-    const { title, author, coverImage } = req.body;
+    const { title, author } = req.body;
 
     // Basic validation
     if (!title || !author)
@@ -66,10 +67,12 @@ export async function createBook(req, res) {
         message: 'Title and author are required',
       });
 
+    const coverImage = req.file ? `/images/books/${req.file.filename}` : null;
+
     const newBook = await BookModel.create({
       title,
       author,
-      coverImage: coverImage || null,
+      coverImage: coverImage,
     });
 
     res.status(201).json({
@@ -77,8 +80,6 @@ export async function createBook(req, res) {
       data: newBook,
     });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({
       message: 'Failed to create book',
     });
@@ -99,12 +100,22 @@ export async function updatebook(req, res) {
     // Prevent ID override
     if (updates.id) delete updates.id;
 
-    const updatedBook = await BookModel.updateById(id, updates);
+    // Fetch existing book
+    const existingBook = await BookModel.findById(id);
 
-    if (!updatedBook)
+    if (!existingBook)
       return res.status(404).json({
         message: 'Book not found',
       });
+
+    // Handle cover image replacement
+    if (req.file) {
+      if (existingBook.coverImage) await removeFile(existingBook.coverImage);
+
+      updates.coverImage = `/images/books/${req.file.filename}`;
+    }
+
+    const updatedBook = await BookModel.updateById(id, updates);
 
     res.status(200).json({
       message: 'Book updated successfully',
@@ -112,7 +123,7 @@ export async function updatebook(req, res) {
     });
   } catch (error) {
     res.status(500).json({
-      message: 'failed to update book',
+      message: 'Failed to update book',
     });
   }
 }
