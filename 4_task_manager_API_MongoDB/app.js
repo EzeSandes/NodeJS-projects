@@ -1,0 +1,60 @@
+import express from 'express';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
+
+import { isDev, env } from './env.js';
+
+const app = express();
+
+/*
+|--------------------------------------------------------------------------
+| Security & Utilities
+|--------------------------------------------------------------------------
+*/
+
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
+
+// ======= Development logging
+if (isDev()) app.use(morgan('dev'));
+
+// ======= Rate Limiting
+if (!isDev()) {
+  // **Doc: https://express-rate-limit.mintlify.app/quickstart/usage
+  const limiter = rateLimit({
+    limit: env.RATE_LIMIT_MAX,
+    windowMs: parseInt(env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 100,
+    message: 'Too many requests from this IP, please try again later.',
+  });
+
+  app.use('/api', limiter);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Routes
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Health check
+|--------------------------------------------------------------------------
+*/
+
+app.get('/', (req, res) => {
+  res.json({ status: 'success', message: 'Task Manager API is running' });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Global Error Handler
+|--------------------------------------------------------------------------
+*/
+
+export default app;
