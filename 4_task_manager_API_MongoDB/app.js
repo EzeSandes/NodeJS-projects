@@ -6,6 +6,8 @@ import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 
 import { isDev, env } from './env.js';
+import globalErrorHandler from './src/controllers/errorController.js';
+import AppError from './src/errors/AppError.js';
 
 const app = express();
 
@@ -47,7 +49,7 @@ if (!isDev()) {
 |--------------------------------------------------------------------------
 */
 
-app.get('/', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ status: 'success', message: 'Task Manager API is running' });
 });
 
@@ -56,5 +58,7 @@ app.get('/', (req, res) => {
 | Global Error Handler
 |--------------------------------------------------------------------------
 */
+
+app.use(globalErrorHandler);
 
 export default app;
