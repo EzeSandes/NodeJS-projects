@@ -13,7 +13,7 @@ const db = new Low(adapter, {});
 export const initDB = async () => {
   await db.read();
 
-  db.data ||= { users: [], notes: [] };
+  db.data ||= { users: [], tasks: [] };
 
   await db.write();
   return db;

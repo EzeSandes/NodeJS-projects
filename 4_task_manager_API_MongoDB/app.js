@@ -8,7 +8,9 @@ import cookieParser from 'cookie-parser';
 import { isDev, env } from './env.js';
 import globalErrorHandler from './src/controllers/errorController.js';
 import AppError from './src/errors/AppError.js';
+
 import testRoutes from './src/routes/testRoutes.js';
+import taskRoutes from './src/routes/taskRoutes.js';
 
 const app = express();
 
@@ -44,7 +46,8 @@ if (!isDev()) {
 |--------------------------------------------------------------------------
 */
 
-app.use('/api/v1/test', testRoutes); // ← Agrega esta línea
+app.use('/api/v1/test', testRoutes);
+app.use('api/v1/tasks', taskRoutes);
 
 /*
 |--------------------------------------------------------------------------
