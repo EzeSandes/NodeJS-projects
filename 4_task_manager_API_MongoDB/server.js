@@ -1,8 +1,24 @@
 import app from './app.js';
 import env from './env.js';
+import { validateEnv, initDB } from './src/config/database.js';
 
-const PORT = env.PORT || 3000;
+// Validate .env variables before init the app
+validateEnv();
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}: ${env.NODE_ENV} mode`);
-});
+const startServer = async () => {
+  try {
+    await initDB();
+    console.log('✅ Database initialized successfully');
+
+    const PORT = env.PORT || 3000;
+
+    app.listen(PORT, () => {
+      console.log(`✅🚀 Server running on port ${PORT}: ${env.NODE_ENV} mode`);
+    });
+  } catch (error) {
+    console.error('❌Error starting server', error);
+    process.exit(1);
+  }
+};
+
+startServer();
