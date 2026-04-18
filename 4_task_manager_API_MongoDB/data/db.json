@@ -1,4 +1,35 @@
 {
-  "users": [],
-  "tasks": []
+  "users": [
+    {
+      "id": "23f4d999-3da9-43a4-bd7a-835be7037ed9",
+      "name": "user",
+      "email": "user@test.com",
+      "role": "user"
+    },
+    {
+      "id": "d7dbbe69-95f5-440d-b1aa-3d736056f4bb",
+      "name": "user1",
+      "email": "user1@test.com",
+      "password": "123456",
+      "role": "user"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "4ca6bf9a-de7c-4ddb-83c1-e5e98b9e0160",
+      "title": "Finish API documentation",
+      "content": "Write and review the complete API documentation for the project.",
+      "priority": "high",
+      "dueDate": "2026-05-01T15:00:00.000Z",
+      "tags": [
+        "backend",
+        "documentation",
+        "api"
+      ],
+      "isCompleted": false,
+      "userId": "d7dbbe69-95f5-440d-b1aa-3d736056f4bb",
+      "createdAt": "2026-04-18T01:26:00.815Z",
+      "updatedAt": "2026-04-18T01:26:00.816Z"
+    }
+  ]
 }

@@ -11,6 +11,7 @@ import AppError from './src/errors/AppError.js';
 
 import testRoutes from './src/routes/testRoutes.js';
 import taskRoutes from './src/routes/taskRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
 
 const app = express();
 
@@ -47,7 +48,8 @@ if (!isDev()) {
 */
 
 app.use('/api/v1/test', testRoutes);
-app.use('api/v1/tasks', taskRoutes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 /*
 |--------------------------------------------------------------------------
