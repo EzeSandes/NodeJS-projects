@@ -30,6 +30,22 @@
       "userId": "d7dbbe69-95f5-440d-b1aa-3d736056f4bb",
       "createdAt": "2026-04-18T01:26:00.815Z",
       "updatedAt": "2026-04-18T01:26:00.816Z"
+    },
+    {
+      "id": "95bc0233-68a8-4dc2-9651-43971f9459e5",
+      "title": "Do mores tests",
+      "content": "Create more endpoints for the project and test them.",
+      "priority": "high",
+      "dueDate": "2026-06-05T15:00:00.000Z",
+      "tags": [
+        "backend",
+        "documentation",
+        "api"
+      ],
+      "isCompleted": false,
+      "userId": "d7dbbe69-95f5-440d-b1aa-3d736056f4bb",
+      "createdAt": "2026-04-22T22:58:14.455Z",
+      "updatedAt": "2026-04-22T22:58:14.455Z"
     }
   ]
 }
