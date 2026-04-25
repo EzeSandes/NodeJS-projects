@@ -1,13 +1,13 @@
 import app from './app.js';
 import env from './env.js';
-import { validateEnv, initDB } from './src/config/database.js';
+import { validateEnv, connectDB } from './src/config/database.js';
 
 // Validate .env variables before init the app
 validateEnv();
 
 const startServer = async () => {
   try {
-    await initDB();
+    await connectDB();
     console.log('✅ Database initialized successfully');
 
     const PORT = env.PORT || 3000;

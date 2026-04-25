@@ -10,7 +10,9 @@ const authSchema = {
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
+    passwordConfirm: Joi.string().min(6).required(),
     role: Joi.string().valid('user', 'admin'),
+    active: Joi.boolean().default(true),
   }),
   login: Joi.object({
     email: Joi.string().email().required(),

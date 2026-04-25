@@ -2,9 +2,8 @@ import AppError from '../errors/AppError.js';
 import catchAsync from '../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
-import { getDB } from '../config/database.js';
 import env from '../../env.js';
-import { v4 as uuidv4 } from 'uuid';
+import User from '../models/User.js';
 
 const signToken = id => {
   return jwt.sign({ id }, env.JWT_SECRET, {
@@ -37,23 +36,14 @@ const createSendToken = (user, statusCode, req, res) => {
 
 export const signup = catchAsync(async (req, res, next) => {
   // Everything is supposed to be validated here already.
-  const { name, email, password, role = 'user' } = req.body;
-
-  const db = getDB();
-  const existingUser = db.data.users.find(user => user.email === email);
-
-  if (existingUser) return next(new AppError('User already exists', 400));
-
-  const newUser = {
-    id: uuidv4(),
-    name,
-    email,
-    password, // TODO: Hashed in a future
-    role,
-  };
-
-  db.data.users.push(newUser);
-  await db.write();
+  const newUser = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
+    active: req.body.active,
+  });
 
   createSendToken(newUser, 201, req, res);
 });
@@ -66,22 +56,28 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email and password', 400));
 
   // 2) Check if user exists & if password is correct
-  const db = getDB();
-  const user = db.data.users.find(
-    u => u.email === email && u.password === password,
-  ); // TODO: HASHED
+  const user = await User.findOne({ email }).select('+password');
+  /* 
+    Find the user by email and explicitly include the 'password' field.
+    Since 'password' is defined with 'select: false' in the schema,
+    it is excluded by default in queries. Using '+password' overrides
+    this behavior and includes it in the result.
+ */
 
-  if (!user) return next(new AppError('Incorrect email or password', 401));
+  if (!user || !(await user.correctPassword(password, user.password)))
+    return next(new AppError('Incorrect email or password', 401));
 
   // 3) If everything is ok, send token to client
   createSendToken(user, 200, req, res);
 });
 
 export const logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
-    expires: new Date(Date.now() + 1 * 1000),
-    httpOnly: true,
-  });
+  // res.cookie('jwt', 'loggedout', {
+  //   expires: new Date(Date.now() + 1 * 1000),
+  //   httpOnly: true,
+  // });
+
+  res.clearCookie('jwt');
 
   res.status(200).json({
     status: 'success',

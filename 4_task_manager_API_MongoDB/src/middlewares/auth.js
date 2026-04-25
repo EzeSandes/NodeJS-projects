@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import AppError from '../errors/AppError.js';
 import catchAsync from '../utils/catchAsync.js';
-import { getDB } from '../config/database.js';
 import env from '../../env.js';
+import User from '../models/User.js';
 
 export const protect = catchAsync(async (req, res, next) => {
   let token;
@@ -27,9 +27,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, env.JWT_SECRET);
 
   // 3) Check if user still exists
-  const db = getDB();
-  const currentUser = await db.data.users.find(user => user.id === decoded.id);
-
+  const currentUser = await User.findById(decoded.id);
   if (!currentUser)
     return next(
       new AppError(
@@ -43,6 +41,42 @@ export const protect = catchAsync(async (req, res, next) => {
   res.locals.user = currentUser;
   next();
 });
+
+/**
+ * isLoggedIn Middleware
+ *
+ * Checks if a user is logged in by verifying the JWT token from httpOnly cookie.
+ * Unlike the 'protect' middleware, this one does NOT block the request if the user
+ * is not authenticated. Instead, it sets req.user = null and continues execution.
+ *
+ * Use cases:
+ * - Public routes that behave differently for logged-in vs guest users
+ * - Displaying user-specific data optionally (e.g. "Welcome back, John")
+ * - Conditional UI elements in frontend (via API response)
+ * - Routes like /me, dashboard preview, or public pages with personalization
+ *
+ * This middleware is optional but highly recommended for flexibility.
+ */
+export const isLoggedIn = async (req, res, nect) => {
+  if (req.cookies.jwt) {
+    try {
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        env.JWT_SECRET,
+      );
+
+      // 2 - Check if the user still exists.
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) return next();
+
+      res.locals.user = currentUser;
+    } catch (error) {
+      return next();
+    }
+  }
+
+  next();
+};
 
 export const restrictTo = (...roles) => {
   return (req, res, next) => {

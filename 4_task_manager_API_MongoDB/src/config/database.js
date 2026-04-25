@@ -1,25 +1,15 @@
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { env } from '../../env.js';
+import mongoose from 'mongoose';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, '../../data/db.json');
-
-//# DOC: https://github.com/typicode/lowdb?tab=readme-ov-file#classes
-const adapter = new JSONFile(file);
-const db = new Low(adapter, {});
-
-export const initDB = async () => {
-  await db.read();
-
-  db.data ||= { users: [], tasks: [] };
-
-  await db.write();
-  return db;
+export const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(env.MONGO_URI);
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    process.exit(1);
+  }
 };
-
-export const getDB = () => db;
 
 export const validateEnv = () => {
   const required = [
@@ -30,6 +20,7 @@ export const validateEnv = () => {
     'JWT_COOKIE_EXPIRES_IN',
     'RATE_LIMIT_MAX',
     'RATE_LIMIT_WINDOW_MS',
+    'MONGO_URI',
   ];
   const missing = required.filter(key => !process.env[key]);
 
