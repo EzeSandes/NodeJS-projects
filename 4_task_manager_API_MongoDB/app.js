@@ -26,6 +26,13 @@ app.use(cors());
 app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 
+// IMPORTANT: Use Express "extended" query parser so bracket notation in query params
+// (e.g., ?dueDate[gte]=2026-01-01) is parsed into nested objects:
+// { dueDate: { gte: '2026-01-01' } } instead of { 'dueDate[gte]': '2026-01-01' }.
+// This is required for the advanced filtering logic that maps operators (gte, lt, etc.)
+// to MongoDB syntax ($gte, $lt) to work correctly.
+app.set('query parser', 'extended');
+
 // ======= Development logging
 if (isDev()) app.use(morgan('dev'));
 

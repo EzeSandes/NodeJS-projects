@@ -86,11 +86,58 @@ curl -X POST http://localhost:3000/api/auth/signup \
   -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
 ```
 
+## Task Endpoints
+
+### Get All Tasks (Advanced Filtering)
+
+**GET** `/api/v1/tasks`
+
+This endpoint supports powerful filtering, searching, sorting, and pagination.
+
+#### Available Query Parameters
+
+| Parameter      | Description                                    | Example                                     |
+| -------------- | ---------------------------------------------- | ------------------------------------------- |
+| `search`       | Search in title and content (case-insensitive) | `?search=nodejs`                            |
+| `isCompleted`  | Filter by completion status                    | `?isCompleted=true` or `?isCompleted=false` |
+| `priority`     | Filter by priority level                       | `?priority=high`                            |
+| `dueDate[gte]` | Due date greater than or equal to              | `?dueDate[gte]=2026-05-01`                  |
+| `dueDate[lte]` | Due date less than or equal to                 | `?dueDate[lte]=2026-06-30`                  |
+| `sort`         | Sort results (`-` for descending)              | `?sort=-createdAt` or `?sort=dueDate`       |
+| `page`         | Page number for pagination                     | `?page=2`                                   |
+| `limit`        | Number of results per page                     | `?limit=10`                                 |
+| `fields`       | Select specific fields to return               | `?fields=title,priority,isCompleted`        |
+
+#### Practical Examples
+
+```bash
+# 1. Search for tasks containing "backend"
+GET /api/v1/tasks?search=backend
+
+# 2. Get only pending high priority tasks
+GET /api/v1/tasks?isCompleted=false&priority=high
+
+# 3. Tasks with due date in May 2026
+GET /api/v1/tasks?dueDate[gte]=2026-05-01&dueDate[lte]=2026-05-31
+
+# 4. Get all tasks sorted by newest first (default)
+GET /api/v1/tasks?sort=-createdAt
+
+# 5. Sort by due date (closest first)
+GET /api/v1/tasks?sort=dueDate
+
+# 6. Combined search + filter + pagination
+GET /api/v1/tasks?search=project&isCompleted=false&priority=medium&page=1&limit=5
+
+# 7. Return only specific fields
+GET /api/v1/tasks?fields=title,content,isCompleted,priority,dueDate
+```
+
 ## 📦 Versions
 
-### 📦 Version 1.0.0 (Current - JSON Database)
+### 📦 Version 1.0.0 (JSON Database)
 
-[Download](https://github.com/EzeSandes/NodeJS-projects/releases/tag/v1.0.0)
+[Download](https://github.com/EzeSandes/NodeJS-projects/tree/v1.0.0-json)
 
 **Features**:
 
@@ -99,16 +146,17 @@ curl -X POST http://localhost:3000/api/auth/signup \
 - JSON file-based storage
 - Security middlewares and validation
 
-### 📦 Version 2.0.0 (MongoDB Enhanced)
+### 📦 Version 2.0.0 (Current - MongoDB Enhanced)
 
-[Download](https://github.com/EzeSandes/NodeJS-projects/releases/tag/v2.0.0) (Coming Soon)
+[Download](https://github.com/EzeSandes/NodeJS-projects/releases/tag/v2.0.0-mongodb)
 
 **Enhanced Features**:
 
 - MongoDB database integration
-- Full task CRUD operations (create, read, update, delete)
-- Password hashing for security
-- Improved performance and scalability
+- Full task CRUD operations with user-specific access control
+- JWT authentication with httpOnly cookies and Bearer token support
+- Advanced task querying with filtering, search, sorting, field selection, and pagination
+- Request validation and password hashing for stronger security
 
 ## 🤝 Contributing
 
@@ -122,4 +170,3 @@ We welcome contributions! Please:
 ## 📄 License
 
 This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.</content>
-<parameter name="filePath">c:\Users\Usuario\Documents\Proyectos\NodeJS\4_task_manager_API_MongoDB\README.md
