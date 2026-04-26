@@ -3,28 +3,32 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-A REST API for task management with authentication, built with Node.js and Express.
+A REST API for task management with authentication, built with Node.js, Express, and MongoDB.
 
-## ✨ Features
+## Features
 
-- 🔐 **User Authentication**: Secure signup, login, logout and protected routes with JWT tokens
-- 📝 **Task Management**: Create and retrieve tasks with user-specific access
-- ✅ **Input Validation**: Comprehensive validation using Joi schemas
-- 🛡️ **Security**: Helmet for security headers, rate limiting, and CORS support
-- 🚨 **Error Handling**: Global error handling with environment-aware responses
-- 📊 **Logging**: Request logging with Morgan
+- **JWT Authentication**: Signup, login, logout, protected routes, and support for both httpOnly cookies and Bearer tokens.
+- **Full Task CRUD**: Create, list, retrieve, update, and delete tasks with user-specific ownership checks.
+- **Advanced Querying**: Search, filter, sort, field selection, and pagination for task collections.
+- **Task Fields**: Support for title, content, priority, due date, tags, and completion status.
+- **Request Validation**: Joi schemas for auth and task payloads with clear validation rules.
+- **Password Security**: Password hashing before persistence and secure credential verification.
+- **Security Middleware**: Helmet, CORS, JSON body limits, cookie parsing, and rate limiting in production.
+- **Centralized Error Handling**: Consistent API error responses through a global error handler.
+- **Operational Routes**: Health check route and validation test route for quick diagnostics.
+- **Developer Experience**: Morgan request logging in development and modular ES Modules structure.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js (ES Modules)
 - **Framework**: Express.js
-- **Database**: JSON file-based (lowdb)
-- **Authentication**: JSON Web Tokens (JWT)
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JSON Web Tokens (JWT) + cookies
 - **Validation**: Joi
-- **Security**: Helmet, express-rate-limit, CORS
-- **Utilities**: UUID, Morgan, Cookie Parser
+- **Security**: Helmet, express-rate-limit, CORS, cookie-parser
+- **Utilities**: Morgan
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository**:
 
@@ -40,11 +44,12 @@ A REST API for task management with authentication, built with Node.js and Expre
    ```
 
 3. **Set up environment variables**:
-   Create a `.env` file in the root directory with the following variables(use .env.example as a template):
+   Create a `.env` file in the root directory using `.env.example` as a template.
 
-   ```
+   ```env
    NODE_ENV=development
    PORT=3000
+   MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret_here
    JWT_EXPIRES_IN=90d
    JWT_COOKIE_EXPIRES_IN=90
@@ -60,30 +65,38 @@ A REST API for task management with authentication, built with Node.js and Expre
 
    The API will be available at `http://localhost:3000`.
 
-## 📖 Usage
+## Usage
 
 ### API Endpoints
 
 #### Authentication
 
-- `POST /api/auth/signup` - Register a new user
-  - Body: `{ "name": "string", "email": "string", "password": "string", "role": "user|admin" }`
-- `POST /api/auth/login` - Authenticate user
+- `POST /api/v1/auth/signup` - Register a new user.
+  - Body: `{ "name": "string", "email": "string", "password": "string", "passwordConfirm": "string", "role": "user|admin" }`
+- `POST /api/v1/auth/login` - Authenticate a user.
   - Body: `{ "email": "string", "password": "string" }`
-- `POST /api/auth/logout` - Logout user (clears JWT cookie)
+- `POST /api/v1/auth/logout` - Logout the current user and clear the JWT cookie.
 
-#### Tasks (Protected Routes - Require Authentication)
+#### Tasks (Protected Routes)
 
-- `GET /api/tasks` - Retrieve all tasks for the authenticated user
-- `POST /api/tasks` - Create a new task
-  - Body: `{ "title": "string", "content": "string", "priority": "low|medium|high", "dueDate": "ISO string", "tags": ["array of strings"] }`
+- `GET /api/v1/tasks` - Retrieve all tasks for the authenticated user.
+- `POST /api/v1/tasks` - Create a new task.
+  - Body: `{ "title": "string", "content": "string", "priority": "low|medium|high", "dueDate": "ISO string", "tags": ["array of strings"], "isCompleted": false }`
+- `GET /api/v1/tasks/:id` - Retrieve a single task if it belongs to the authenticated user.
+- `PATCH /api/v1/tasks/:id` - Update task fields such as title, content, priority, dueDate, tags, or isCompleted.
+- `DELETE /api/v1/tasks/:id` - Delete a task if it belongs to the authenticated user.
+
+#### Utility Routes
+
+- `GET /health` - Basic health check.
+- `POST /api/v1/test/test-validation` - Validation testing endpoint.
 
 ### Example Request
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/signup \
+curl -X POST http://localhost:3000/api/v1/auth/signup \
   -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123","passwordConfirm":"password123"}'
 ```
 
 ## Task Endpoints
@@ -92,7 +105,7 @@ curl -X POST http://localhost:3000/api/auth/signup \
 
 **GET** `/api/v1/tasks`
 
-This endpoint supports powerful filtering, searching, sorting, and pagination.
+This endpoint supports filtering, searching, sorting, field selection, and pagination.
 
 #### Available Query Parameters
 
@@ -133,9 +146,9 @@ GET /api/v1/tasks?search=project&isCompleted=false&priority=medium&page=1&limit=
 GET /api/v1/tasks?fields=title,content,isCompleted,priority,dueDate
 ```
 
-## 📦 Versions
+## Versions
 
-### 📦 Version 1.0.0 (JSON Database)
+### Version 1.0.0 (JSON Database)
 
 [Download](https://github.com/EzeSandes/NodeJS-projects/tree/v1.0.0-json)
 
@@ -146,7 +159,7 @@ GET /api/v1/tasks?fields=title,content,isCompleted,priority,dueDate
 - JSON file-based storage
 - Security middlewares and validation
 
-### 📦 Version 2.0.0 (Current - MongoDB Enhanced)
+### Version 2.0.0 (Current - MongoDB Enhanced)
 
 [Download](https://github.com/EzeSandes/NodeJS-projects/releases/tag/v2.0.0-mongodb)
 
@@ -157,8 +170,9 @@ GET /api/v1/tasks?fields=title,content,isCompleted,priority,dueDate
 - JWT authentication with httpOnly cookies and Bearer token support
 - Advanced task querying with filtering, search, sorting, field selection, and pagination
 - Request validation and password hashing for stronger security
+- Production-ready middleware setup with rate limiting, CORS, Helmet, and centralized error handling
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please:
 
@@ -167,6 +181,6 @@ We welcome contributions! Please:
 3. Make your changes
 4. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.</content>
+This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
