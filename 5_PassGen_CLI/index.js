@@ -76,3 +76,26 @@ function error(msg) {
   printHelp();
   process.exit(1);
 }
+
+// ======================== MAIN LOGIC ========================
+
+if (args.help) {
+  printHelp();
+  process.exit(0);
+}
+
+let length = parseInt(args.length);
+if (isNaN(length) || length < 4 || length > 128) length = 16;
+
+const options = {
+  lowercase: args.lowercase,
+  uppercase: args.uppercase,
+  numbers: args.numbers,
+  symbols: args.symbols,
+};
+
+console.log('🔐 Generating secure password...\n');
+
+const password = generatePassword(length, options);
+console.log(password);
+console.log(`\nLength: ${length}`);

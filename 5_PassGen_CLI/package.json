@@ -19,6 +19,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "minimist": "^1.2.8"
+    "minimist": "1.2.8"
   }
 }

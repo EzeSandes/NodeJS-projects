@@ -27,6 +27,10 @@ npm install
 
 ```bash
 node index.js [options]
+
+or
+
+npx passgen [options]
 ```
 
 ## Options
