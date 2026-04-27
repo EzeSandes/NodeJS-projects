@@ -1,0 +1,24 @@
+{
+  "name": "5_passgen_cli",
+  "version": "1.0.0",
+  "description": "Minimalist Secure Password Generator in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "passgen": "./index.js"
+  },
+  "keywords": [
+    "cli",
+    "password",
+    "generator"
+  ],
+  "author": "Ezequiel Sandes",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "minimist": "^1.2.8"
+  }
+}
