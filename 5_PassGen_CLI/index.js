@@ -8,12 +8,13 @@ import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 
 const args = minimist(process.argv.slice(2), {
-  boolean: ['help', 'numbers', 'symbols', 'uppercase', 'lowercase', 'save'],
-  string: ['length'],
+  boolean: ['help', 'numbers', 'symbols', 'uppercase', 'lowercase'],
+  string: ['length', 'save'],
   alias: {
     l: 'length',
     h: 'help',
     c: 'copy',
+    s: 'save',
   },
   default: {
     length: 16,
@@ -99,3 +100,21 @@ console.log('🔐 Generating secure password...\n');
 const password = generatePassword(length, options);
 console.log(password);
 console.log(`\nLength: ${length}`);
+
+// ======================== SAVE TO FILE ========================
+
+if (args.save) {
+  const filename =
+    typeof args.save === 'string' && args.save.length > 0
+      ? args.save
+      : 'password.txt';
+
+  console.log('aqui');
+
+  await fs.writeFile(filename, password + '\n', 'utf-8');
+  console.log(`\n✅ Password saved successfully to: ${filename}`);
+  try {
+  } catch (err) {
+    console.error(`\n❌ Error saving file: ${err.message}`);
+  }
+}
