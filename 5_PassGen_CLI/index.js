@@ -6,9 +6,10 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
+import clipboard from 'clipboardy';
 
 const args = minimist(process.argv.slice(2), {
-  boolean: ['help', 'numbers', 'symbols', 'uppercase', 'lowercase'],
+  boolean: ['help', 'numbers', 'symbols', 'uppercase', 'lowercase', 'copy'],
   string: ['length', 'save'],
   alias: {
     l: 'length',
@@ -22,6 +23,7 @@ const args = minimist(process.argv.slice(2), {
     symbols: true,
     uppercase: true,
     lowercase: true,
+    copy: false,
   },
 });
 
@@ -116,5 +118,15 @@ if (args.save) {
   try {
   } catch (err) {
     console.error(`\n❌ Error saving file: ${err.message}`);
+  }
+}
+
+// ======================== COPY TO CLIPBOARD ========================
+if (args.copy) {
+  try {
+    await clipboard.write(password);
+    console.log(`✅ Password copied to clipboard!`);
+  } catch (err) {
+    console.error(`❌ Could not copy to clipboard: `, err.message);
   }
 }
