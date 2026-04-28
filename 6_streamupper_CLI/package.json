@@ -1,0 +1,23 @@
+{
+  "name": "6_streamupper_cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "streamupper": "./index.js"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "Ezequiel Sandes",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "get-stdin": "10.0.0",
+    "minimist": "1.2.8"
+  }
+}
