@@ -4,15 +4,15 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Transform } from 'stream';
-import getStdin from 'get-stdin';
+import zlib from 'node:zlib';
 
 const args = minimist(process.argv.slice(2), {
-  boolean: ['help', 'in', 'out'],
+  boolean: ['help', 'in', 'out', 'compress', 'uncompress'],
   string: ['file'],
   alias: {
     h: 'help',
     i: 'in',
-    o: 'o',
+    o: 'out',
   },
 });
 
@@ -51,12 +51,20 @@ Options:
   -i, --in                  Read input from stdin
   -o, --out                 Display result in out.txt
   -f, --file=<FILENAME>     Read input from a file
+  --compress                Read input from a file and compress it into a .gz file
+  --uncompress              Uncompress a .gz file and save the content where it's indicated with --i or --file
 `);
 }
 
 // Process the contents of the file or stdin
 function processFile(inStream) {
   let outStream = inStream;
+
+  if (args.uncompress) {
+    let gunzipStream = zlib.createGunzip();
+
+    outStream = outStream.pipe(gunzipStream);
+  }
 
   /*
   'Transforms' reads data, modify them ans passes to the next data.
@@ -71,6 +79,12 @@ function processFile(inStream) {
   });
 
   outStream = outStream.pipe(upperStream);
+
+  if (args.compress) {
+    let gzipStream = zlib.createGzip();
+    outStream = outStream.pipe(gzipStream);
+    OUTFILE = `${OUTFILE}.gz`;
+  }
 
   let targetStream;
 
