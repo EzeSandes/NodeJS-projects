@@ -21,8 +21,23 @@ node index.js --file=example.txt
 # Process from stdin and show output in console
 cat example.txt | node index.js --in --out
 
+# Process from stdin and save to out.txt
+cat example.txt | node index.js --in
+
+# Process from stdin(--in) and show output(--out) in console
+cat example.txt | node index.js --in --out
+
 # Process a file using default output (out.txt)
 node index.js --file=example.txt
+
+# Process a file in root called 'hello.txt' and compress it in 'out.txt.gz'
+node .\index.js --file="hello.txt" --compress
+
+# Process a file in root called 'test.txt' and pass the content to console(cat) which is catch(--in) and compress it in 'out.txt.gz'
+cat test.txt | node .\index.js --in --compress
+
+# Process a gzip file in root called 'out.txt.gz' and uncompress it in 'out.txt'
+node .\index.js --file="out.txt.gz" --uncompress
 ```
 
 ## Technical Explanation: Understanding Streams in this Project
