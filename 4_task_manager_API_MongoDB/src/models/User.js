@@ -66,6 +66,7 @@ userSchema.pre('save', async function (next) {
   The 'required' constraint applies only at the input validation level.
 */
   this.passwordConfirm = undefined;
+  next();
 });
 
 // ==================== INSTANCE METHODS ====================
