@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat Test Client</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>Socket.io Test Client</h1>
+
+    <input id="token" placeholder="Paste your JWT here" style="width: 400px" />
+    <button onclick="connect()">Connect</button>
+
+    <div id="status" style="margin: 10px 0; color: green"></div>
+
+    <input id="message" placeholder="Write message" />
+    <button onclick="sendMessage()">Send to general</button>
+
+    <div id="messages"></div>
+
+    <script>
+      let socket = null;
+
+      function connect() {
+        const token = document.getElementById('token').value;
+
+        // URL from the server
+        socket = io('http://localhost:3000', {
+          auth: { token: token },
+        });
+
+        socket.on('connect', () => {
+          document.getElementById('status').textContent = 'Connected';
+
+          socket.emit('joinRoom', { room: 'general' });
+        });
+
+        socket.on('connect_error', error => {
+          document.getElementById('status').textContent =
+            `Connection error: ${error.message}`;
+          console.error('Socket connection error:', error);
+        });
+
+        socket.on('newMessage', msg => {
+          const div = document.createElement('div');
+          div.textContent = `${msg.sender.username}: ${msg.content}`;
+          document.getElementById('messages').appendChild(div);
+        });
+
+        socket.on('usersOnline', users => {
+          console.log('Users online:', users);
+        });
+
+        // Listen to the response along with the history
+        socket.on('roomHistory', ({ room, messages }) => {
+          console.log(`Historial recibido de ${room}:`, messages);
+
+          // Display all messages in the chat
+          messages.forEach(msg => {
+            addMessageToUI(msg);
+          });
+        });
+      }
+
+      function sendMessage() {
+        if (!socket) return;
+        const msg = document.getElementById('message').value;
+        socket.emit('sendMessage', {
+          content: msg,
+          room: 'general',
+        });
+        document.getElementById('message').value = '';
+      }
+
+      function addMessageToUI(msg) {
+        const div = document.createElement('div');
+        div.textContent = `${msg.sender.username}: ${msg.content}`;
+        document.getElementById('messages').appendChild(div);
+      }
+    </script>
+  </body>
+</html>

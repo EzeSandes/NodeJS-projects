@@ -45,14 +45,22 @@ const userSchema = mongoose.Schema(
 // ==================== MIDDLEWARE (pre-save) ====================
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModifed('password')) return next();
+  if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
-  next();
+  // next();
 });
 
-// ========================================
+// ==================== INSTANCE METHODS ====================
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  // this.password: No because it has 'select': false => Its not present in the output.
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 

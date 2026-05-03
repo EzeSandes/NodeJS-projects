@@ -8,7 +8,7 @@ import { isDev, isProd } from '../env.js';
 */
 
 const sendErrorDev = (err, req, res) => {
-  if (req.originalUrl.startWith('/api')) {
+  if (req.originalUrl.startsWith('/api')) {
     return res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
@@ -19,7 +19,7 @@ const sendErrorDev = (err, req, res) => {
 };
 
 const sendErrorProd = (err, req, res) => {
-  if (req.originalUrl.startWith('/api')) {
+  if (req.originalUrl.startsWith('/api')) {
     if (err.isOperational)
       return res.status(err.statusCode).json({
         status: err.status,
